@@ -112,7 +112,9 @@ class PolicyAccounting(object):
             pass
         elif self.policy.billing_schedule == "Two-Pay": #future error
             for i in range(1, billing_schedule):
-                bill_date = self.policy.effective_date + relativedelta(months=i*6)
+                months_after_eff_date = i*6
+
+                bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
 
                 invoice = Invoice(self.policy.id,
                                   bill_date,
@@ -123,7 +125,9 @@ class PolicyAccounting(object):
                 invoices.append(invoice)
         elif self.policy.billing_schedule == "Quarterly":
             for i in range(1, billing_schedule):
-                bill_date = self.policy.effective_date + relativedelta(months=i*3)
+                months_after_eff_date = i*3
+
+                bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
 
                 invoice = Invoice(self.policy.id,
                                   bill_date,
@@ -134,7 +138,9 @@ class PolicyAccounting(object):
                 invoices.append(invoice)
         elif self.policy.billing_schedule == "Monthly":
             for i in range(1, billing_schedule):
-                bill_date = self.policy.effective_date + relativedelta(months=i)
+                months_after_eff_date = i
+
+                bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
 
                 invoice = Invoice(self.policy.id,
                                   bill_date,
