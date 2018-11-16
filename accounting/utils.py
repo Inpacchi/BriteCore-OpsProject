@@ -113,9 +113,7 @@ class PolicyAccounting(object):
             first_invoice.amount_due = first_invoice.amount_due / billing_schedule
 
             for i in range(1, billing_schedule):
-                months_after_eff_date = i*6
-
-                bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
+                bill_date = self.policy.effective_date + relativedelta(months=i*6)
 
                 invoice = Invoice(self.policy.id,
                                   bill_date,
@@ -128,9 +126,7 @@ class PolicyAccounting(object):
             first_invoice.amount_due = first_invoice.amount_due / billing_schedule
 
             for i in range(1, billing_schedule):
-                months_after_eff_date = i*3
-
-                bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
+                bill_date = self.policy.effective_date + relativedelta(months=i*3)
 
                 invoice = Invoice(self.policy.id,
                                   bill_date,
@@ -143,9 +139,7 @@ class PolicyAccounting(object):
             first_invoice.amount_due = first_invoice.amount_due / billing_schedule
 
             for i in range(1, billing_schedule):
-                months_after_eff_date = i
-
-                bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
+                bill_date = self.policy.effective_date + relativedelta(months=i)
 
                 invoice = Invoice(self.policy.id,
                                   bill_date,
