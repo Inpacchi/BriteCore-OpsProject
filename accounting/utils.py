@@ -102,9 +102,9 @@ class PolicyAccounting(object):
                                 self.policy.effective_date + relativedelta(months=1), #due
                                 self.policy.effective_date + relativedelta(months=1, days=14), #cancel
                                 self.policy.annual_premium)
-
         invoices.append(first_invoice)
 
+<<<<<<< HEAD
         billing_schedule = billing_schedules.get(self.policy.billing_schedule)
         first_invoice.amount_due = first_invoice.amount_due / billing_schedule
 
@@ -112,6 +112,14 @@ class PolicyAccounting(object):
             pass
         elif self.policy.billing_schedule == "Two-Pay": #future error
             for i in range(1, billing_schedule):
+=======
+        if self.policy.billing_schedule == "Annual":
+            pass
+        elif self.policy.billing_schedule == "Two-Pay":
+            first_invoice.amount_due = first_invoice.amount_due / billing_schedules.get(self.policy.billing_schedule)
+
+            for i in range(1, billing_schedules.get(self.policy.billing_schedule)):
+>>>>>>> parent of 41bb869... 1. Eliminated some code redundancy
                 months_after_eff_date = i*6
 
                 bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
@@ -120,11 +128,17 @@ class PolicyAccounting(object):
                                   bill_date,
                                   bill_date + relativedelta(months=1),
                                   bill_date + relativedelta(months=1, days=14),
-                                  self.policy.annual_premium / billing_schedule)
+                                  self.policy.annual_premium / billing_schedules.get(self.policy.billing_schedule))
 
                 invoices.append(invoice)
         elif self.policy.billing_schedule == "Quarterly":
+<<<<<<< HEAD
             for i in range(1, billing_schedule):
+=======
+            first_invoice.amount_due = first_invoice.amount_due / billing_schedules.get(self.policy.billing_schedule)
+
+            for i in range(1, billing_schedules.get(self.policy.billing_schedule)):
+>>>>>>> parent of 41bb869... 1. Eliminated some code redundancy
                 months_after_eff_date = i*3
 
                 bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
@@ -133,11 +147,17 @@ class PolicyAccounting(object):
                                   bill_date,
                                   bill_date + relativedelta(months=1),
                                   bill_date + relativedelta(months=1, days=14),
-                                  self.policy.annual_premium / billing_schedule)
+                                  self.policy.annual_premium / billing_schedules.get(self.policy.billing_schedule))
 
                 invoices.append(invoice)
         elif self.policy.billing_schedule == "Monthly":
+<<<<<<< HEAD
             for i in range(1, billing_schedule):
+=======
+            first_invoice.amount_due = first_invoice.amount_due / billing_schedules.get(self.policy.billing_schedule)
+
+            for i in range(1, billing_schedules.get(self.policy.billing_schedule)):
+>>>>>>> parent of 41bb869... 1. Eliminated some code redundancy
                 months_after_eff_date = i
 
                 bill_date = self.policy.effective_date + relativedelta(months=months_after_eff_date)
@@ -146,7 +166,7 @@ class PolicyAccounting(object):
                                   bill_date,
                                   bill_date + relativedelta(months=1),
                                   bill_date + relativedelta(months=1, days=14),
-                                  self.policy.annual_premium / billing_schedule)
+                                  self.policy.annual_premium / billing_schedules.get(self.policy.billing_schedule))
 
                 invoices.append(invoice)
         else:
@@ -154,7 +174,7 @@ class PolicyAccounting(object):
 
         for invoice in invoices:
             db.session.add(invoice)
-
+            
         db.session.commit()
 
 ################################
