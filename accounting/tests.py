@@ -66,6 +66,7 @@ class TestReturnAccountBalance(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # print("Setting up class...")
         cls.test_agent = Contact('Test Agent', 'Agent')
         cls.test_insured = Contact('Test Insured', 'Named Insured')
         db.session.add(cls.test_agent)
@@ -77,23 +78,30 @@ class TestReturnAccountBalance(unittest.TestCase):
         cls.policy.agent = cls.test_agent.id
         db.session.add(cls.policy)
         db.session.commit()
+        # print("Class set up!\n")
 
     @classmethod
     def tearDownClass(cls):
+        # print("Class tearing down...")
         db.session.delete(cls.test_insured)
         db.session.delete(cls.test_agent)
         db.session.delete(cls.policy)
         db.session.commit()
+        # print("Class torn down!")
 
     def setUp(self):
+        # print("Setting up...")
         self.payments = []
+        # print("Set up!")
 
     def tearDown(self):
+        # print("Tearing down...")
         for invoice in self.policy.invoices:
             db.session.delete(invoice)
         for payment in self.payments:
             db.session.delete(payment)
         db.session.commit()
+        # print("Torn down!\n")
 
     def test_annual_on_eff_date(self):
         self.policy.billing_schedule = "Annual"
