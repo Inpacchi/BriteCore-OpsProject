@@ -97,6 +97,10 @@ class PolicyAccounting(object):
                           contact_id,
                           amount,
                           date_cursor)
+        
+        invoice = Invoice.query.filter_by(policy_id=self.policy.id).first()
+        invoice.deleted = True
+
         db.session.add(payment) # Add the payment to the database
         db.session.commit() # Commit the changes (save)
 
@@ -117,7 +121,7 @@ class PolicyAccounting(object):
 
         # Access the database to grab invoices according to the current policy. Filter them by looking for all invoices whose billing date is on or before 
         # the date_cursor, then order them by the billing date. The .all() method returns all matched invoices.
-        invoices = Invoice.query.filter_by(policy_id=self.policy.id)\
+        invoices = Invoice.query.filter_by(policy_id=self.policy_id)\
                                 .filter(Invoice.cancel_date <= date_cursor)\
                                 .order_by(Invoice.bill_date)\
                                 .all()
@@ -130,7 +134,6 @@ class PolicyAccounting(object):
                 break
         else:
             print "THIS POLICY SHOULD NOT CANCEL" # This is where you end up if invoices returns continue
-
 
     def make_invoices(self):
         for invoice in self.policy.invoices: # If there are any invoices, delete them as we are making new ones
