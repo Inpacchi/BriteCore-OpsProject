@@ -83,6 +83,8 @@ class PolicyAccounting(object):
             due_now = self.policy.annual_premium / billing_schedules.get(self.policy.billing_schedule) #
             print "Since no invoices are present and as such, no payments have been made, the current amount due is $", due_now, "\n"
 
+        if due_now < 0: # If due_now is less than 0, this means the payments satisfied the invoices due to our checking of the deleted status
+            due_now = 0 # So set it equal to 0 as there is no balance due
         return due_now
 
     def make_payment(self, contact_id=None, date_cursor=None, amount=0):
@@ -100,7 +102,9 @@ class PolicyAccounting(object):
                           amount,
                           date_cursor)
         
-        invoice = Invoice.query.filter_by(policy_id=self.policy.id).first() # Get the paid invoice
+        invoice = Invoice.query.filter_by(policy_id=self.policy.id)\
+            .filter_by(deleted=False)\
+            .first() # Get the first invoice that hasn't already been paid
         invoice.deleted = True # Change it's deleted status to true to reflect payment
 
         db.session.add(payment) # Add the payment to the database
