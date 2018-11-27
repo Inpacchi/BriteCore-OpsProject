@@ -46,16 +46,18 @@ class PolicyAccounting(object):
 
         due_now = 0 # Set our due_now variable to 0 as it is to be modified by invoices and payments
 
-        if(len(invoices) != 0): # If invoices is empty, don't bother executing code on it as we are wasting time
-            if(len(invoices) == 1):
-                print "1 invoice is present. Listing..."
-                print "The current invoice has a balance due of $", invoices[0].amount_due
-                due_now = invoices[0].amount_due
+        if len(invoices) != 0: # If invoices is empty, don't bother executing code on it as we are wasting time
+            if len(invoices) == 1:
+                if not invoices.deleted: # Check the deleted status of the invoice to see if it was paid or not
+                    print "1 invoice is present. Listing..."
+                    print "The current invoice has a balance due of $", invoices[0].amount_due
+                    due_now = invoices[0].amount_due
             else:
                 print len(invoices), "invoices are present. Listing..."
                 for invoice in invoices:
-                    print "The current invoice has a balance due of $", invoice.amount_due
-                    due_now += invoice.amount_due # Increase due_now for each invoice found
+                    if not invoices.deleted: # Check the deleted status of the invoice to see if it was paid or not
+                        print "The current invoice has a balance due of $", invoice.amount_due
+                        due_now += invoice.amount_due # Increase due_now for each invoice found
 
             print "The current amount due is $", due_now
         else:
@@ -66,7 +68,7 @@ class PolicyAccounting(object):
                                 .filter(Payment.transaction_date <= date_cursor)\
                                 .all()
 
-        if(len(payments) != 0): # Same logic as above length of invoices above
+        if len(payments) != 0: # Same logic as above length of invoices above
             print len(payments), " payments have been made. Listing..."
             for payment in payments:
                 print "A payment has been made in the amount $", payment.amount_paid
@@ -76,7 +78,7 @@ class PolicyAccounting(object):
         else:
             print "No payments have been made."
 
-        if(len(invoices) == 0 and len(payments) == 0): # If there are no payments or invoices, the account balance has not been paid
+        if len(invoices) == 0 and len(payments) == 0: # If there are no payments or invoices, the account balance has not been paid
             # If that's the case, set due_now equal to the annual premium divided by the billing schedule
             due_now = self.policy.annual_premium / billing_schedules.get(self.policy.billing_schedule) #
             print "Since no invoices are present and as such, no payments have been made, the current amount due is $", due_now, "\n"
@@ -109,6 +111,8 @@ class PolicyAccounting(object):
     def evaluate_cancellation_pending_due_to_non_pay(self, date_cursor=None):
         if not date_cursor: # If date_cursor is equal to the default value (None) or null, set it equal to the current date
             date_cursor = datetime.now().date()
+
+        
 
         if(date_cursor > invoice.due_date and date_cursor <= invoice.cancel_date)
             policy.status = 'Cancellation Pending due to non-pay'
