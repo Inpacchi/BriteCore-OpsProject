@@ -116,18 +116,19 @@ class PolicyAccounting(object):
         if not date_cursor: # If date_cursor is equal to the default value (None) or null, set it equal to the current date
             date_cursor = datetime.now().date()
 
-        
+        invoice = Invoice.query.filter_by(policy_id=self.policy.id)\
+            .filter_by(deleted=False)\
+            .first() # Check and grab the first invoice that hasn't been paid
 
-        if(date_cursor > invoice.due_date and date_cursor <= invoice.cancel_date)
+        if invoice == None: # If no invoice was queried from the database, check the account balance to make sure all payments have been made
+            if return_account_balance == 0: # If return_account_balance returns 0, that means all invoices have been paid
+                return False
+
+        if date_cursor > invoice.due_date and date_cursor <= invoice.cancel_date:
             policy.status = 'Cancellation Pending due to non-pay'
+            return True
         
-        """
-         If this function returns true, an invoice
-         on a policy has passed the due date without
-         being paid in full. However, it has not necessarily
-         made it to the cancel_date yet.
-        """
-        pass
+        return False
 
     def evaluate_cancel(self, date_cursor=None):
         if not date_cursor: # If date_cursor is equal to the default value (None) or null, set it equal to the current date
