@@ -98,8 +98,8 @@ class PolicyAccounting(object):
                           amount,
                           date_cursor)
         
-        invoice = Invoice.query.filter_by(policy_id=self.policy.id).first()
-        invoice.deleted = True
+        invoice = Invoice.query.filter_by(policy_id=self.policy.id).first() # Get the paid invoice
+        invoice.deleted = True # Change it's deleted status to true to reflect payment
 
         db.session.add(payment) # Add the payment to the database
         db.session.commit() # Commit the changes (save)
@@ -107,6 +107,12 @@ class PolicyAccounting(object):
         return payment
 
     def evaluate_cancellation_pending_due_to_non_pay(self, date_cursor=None):
+        if not date_cursor: # If date_cursor is equal to the default value (None) or null, set it equal to the current date
+            date_cursor = datetime.now().date()
+
+        if(date_cursor > invoice.due_date and date_cursor <= invoice.cancel_date)
+            policy.status = 'Cancellation Pending due to non-pay'
+        
         """
          If this function returns true, an invoice
          on a policy has passed the due date without
