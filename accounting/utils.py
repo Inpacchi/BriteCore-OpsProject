@@ -48,14 +48,14 @@ class PolicyAccounting(object):
 
         if len(invoices) != 0: # If invoices is empty, don't bother executing code on it as we are wasting time
             if len(invoices) == 1:
-                if not invoices.deleted: # Check the deleted status of the invoice to see if it was paid or not
+                if invoice.amount_due > 0: # Check if the invoice has a remaining balance
                     print "1 invoice is present. Listing..."
                     print "The current invoice has a balance due of $", invoices[0].amount_due
                     due_now = invoices[0].amount_due
             else:
                 print len(invoices), "invoices are present. Listing..."
                 for invoice in invoices:
-                    if not invoices.deleted: # Check the deleted status of the invoice to see if it was paid or not
+                    if invoice.amount_due > 0: # Check if the invoice has a remaining balance
                         print "The current invoice has a balance due of $", invoice.amount_due
                         due_now += invoice.amount_due # Increase due_now for each invoice found
 
@@ -103,9 +103,9 @@ class PolicyAccounting(object):
                           date_cursor)
         
         invoice = Invoice.query.filter_by(policy_id=self.policy.id)\
-            .filter_by(deleted=False)\
+            .filter_by(amount_due > 0)\
             .first() # Get the first invoice that hasn't already been paid
-        invoice.deleted = True # Change it's deleted status to true to reflect payment
+        invoice.amount_due -= amount # Subtract the amount paid from the invoice amount due
 
         db.session.add(payment) # Add the payment to the database
         db.session.commit() # Commit the changes (save)
@@ -117,7 +117,7 @@ class PolicyAccounting(object):
             date_cursor = datetime.now().date()
 
         invoice = Invoice.query.filter_by(policy_id=self.policy.id)\
-            .filter_by(deleted=False)\
+            .filter_by(amount_due > 0)\
             .first() # Check and grab the first invoice that hasn't been paid
 
         if invoice == None: # If no invoice was queried from the database, check the account balance to make sure all payments have been made
