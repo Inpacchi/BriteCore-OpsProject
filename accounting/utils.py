@@ -31,7 +31,7 @@ class PolicyAccounting(object):
         print "PolicyAccouting intialized!\n"
 
     def return_account_balance(self, date_cursor=None): # Take in a date and return the corresponding account balance according to invoices and payments
-        billing_schedules = {'Annual': 1, 'Semi-Annual': 3, 'Quarterly': 4, 'Monthly': 12}
+        billing_schedules = {'Annual': 1, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}
 
         if not date_cursor: # If date_cursor is equal to the default value (None) or null, set it equal to the current date
             print "No date has been set. Setting date to current date."
@@ -49,6 +49,7 @@ class PolicyAccounting(object):
         if len(invoices) != 0: # If invoices is empty, don't bother executing code on it as we are wasting time
             if len(invoices) == 1:
                 if invoice.amount_due > 0: # Check if the invoice has a remaining balance
+                if invoices[0].amount_due > 0: # Check if the invoice has a remaining balance
                     print "1 invoice is present. Listing..."
                     print "The current invoice has a balance due of $", invoices[0].amount_due
                     due_now = invoices[0].amount_due
@@ -156,7 +157,7 @@ class PolicyAccounting(object):
         for invoice in self.policy.invoices: # If there are any invoices, delete them as we are making new ones
             invoice.delete()
 
-        billing_schedules = {'Annual': None, 'Semi-Annual': 3, 'Quarterly': 4, 'Monthly': 12}
+        billing_schedules = {'Annual': None, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}
 
         invoices = []
 
