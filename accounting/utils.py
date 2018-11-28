@@ -59,9 +59,9 @@ class PolicyAccounting(object):
                         print "The current invoice has a balance due of $", invoice.amount_due
                         due_now += invoice.amount_due # Increase due_now for each invoice found
 
-            print "The current amount due is $", due_now
+            print "The current amount due is $", due_now, "\n"
         else:
-            print "No invoices are present."
+            print "No invoices are present.\n"
 
         # Same logic as invoices above
         payments = Payment.query.filter_by(policy_id=self.policy.id)\
@@ -76,7 +76,7 @@ class PolicyAccounting(object):
 
             print "The current amount due is now $", due_now, "\n"
         else:
-            print "No payments have been made."
+            print "No payments have been made.\n"
 
         if len(invoices) == 0 and len(payments) == 0: # If there are no payments or invoices, the account balance has not been paid
             # If that's the case, set due_now equal to the annual premium divided by the billing schedule
@@ -138,7 +138,7 @@ class PolicyAccounting(object):
 
         # Access the database to grab invoices according to the current policy. Filter them by looking for all invoices whose billing date is on or before 
         # the date_cursor, then order them by the billing date. The .all() method returns all matched invoices.
-        invoices = Invoice.query.filter_by(policy_id=self.policy_id)\
+        invoices = Invoice.query.filter_by(policy_id=self.policy.id)\
                                 .filter(Invoice.cancel_date <= date_cursor)\
                                 .order_by(Invoice.bill_date)\
                                 .all()
@@ -147,17 +147,26 @@ class PolicyAccounting(object):
             if not self.return_account_balance(invoice.cancel_date): # If there is no account balance on the cancel date...
                 continue # Continue on to the next iteration of the for loop
             else:
-                print "THIS POLICY SHOULD HAVE CANCELED" # Otherwise the policy should be cancelled'
-                cancel_policy()
-                break
+                print "THIS POLICY SHOULD BE CANCELED\n" # Otherwise the policy should be cancelled'
+                self.cancel_policy() # Invoke and cancel it
+                return True
         else:
             print "THIS POLICY SHOULD NOT CANCEL" # This is where you end up if invoices returns continue
+            return False
 
-    def cancel_policy(self, date_cursor=None):
-        if not date_cursor:
+    def cancel_policy(self, date_cursor=None, cancellation_reason='No payment received'):
+        if not date_cursor: # If no date is given, set the cancellation date to today
             date_cursor = datetime.now().date()
 
-        self.policy.status = 'Cancelled'
+        self.policy.status = 'Cancelled' # Change the status of the policy in the database
+        
+        print "Policy Number:", self.policy.policy_number
+        print "Status:", self.policy.status
+        print "Reason:", cancellation_reason, "\n"
+
+        policy = Cancelled_Policy(self.policy.id, self.policy.policy_number, date_cursor, cancellation_reason)
+        db.session.add(policy)
+        db.session.commit()
 
     def make_invoices(self):
         billing_schedules = {'Annual': None, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}

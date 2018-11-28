@@ -4,7 +4,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 from accounting import db
-from models import Contact, Invoice, Payment, Policy
+from models import Contact, Invoice, Payment, Policy, Cancelled_Policy
 from utils import PolicyAccounting
 
 """
@@ -104,7 +104,7 @@ class TestChangeBillingSchedule(unittest.TestCase):
 
         pa.change_billing_schedule("Two-Pay")
         db.session.rollback()
-        
+
         # print "Done!\n"
 
     def test_change_billing_schedule_two_pay_to_annual(self):
@@ -123,6 +123,7 @@ class TestChangeBillingSchedule(unittest.TestCase):
         db.session.rollback()
 
         # print "Done!\n"
+
 class TestBillingSchedules(unittest.TestCase):
 
     @classmethod
@@ -179,7 +180,6 @@ class TestBillingSchedules(unittest.TestCase):
         self.assertEquals(len(self.policy.invoices), 12)
         self.assertEquals(self.policy.invoices[0].amount_due, self.policy.annual_premium/12)
         # print "Done!\n"
-
 
 class TestReturnAccountBalance(unittest.TestCase):
 
@@ -255,3 +255,53 @@ class TestReturnAccountBalance(unittest.TestCase):
                                              date_cursor=invoices[1].bill_date, amount=600))
         self.assertEquals(pa.return_account_balance(date_cursor=invoices[1].bill_date), 0)
         # print "Done!\n"
+
+class TestPolicyCancellation(unittest.TestCase):
+    
+    @classmethod
+    def setUpClass(cls):
+        cls.test_agent = Contact('Test Agent', 'Agent')
+        cls.test_insured = Contact('Test Named Insured', 'Named Insured')
+        db.session.add(cls.test_agent)
+        db.session.add(cls.test_insured)
+        db.session.commit()
+
+        cls.policy = Policy('Test Policy', date(2018, 10, 1), 1870)
+        db.session.add(cls.policy)
+        db.session.commit()
+
+        cls.policy.named_insured = cls.test_insured.id
+        cls.policy.agent = cls.test_agent.id
+        cls.policy.billing_schedule = 'Monthly'
+        db.session.commit()
+    
+    @classmethod
+    def tearDownClass(cls):
+        db.session.delete(cls.test_insured)
+        db.session.delete(cls.test_agent)
+        db.session.delete(cls.policy)
+        db.session.commit()
+    
+    def setUp(self):
+        pass
+    
+    def tearDown(self):
+        for invoice in self.policy.invoices:
+            db.session.delete(invoice)
+        db.session.commit()
+
+    def test_policy_cancellation(self):
+        pa = PolicyAccounting(self.policy.id)
+
+        self.assertTrue(pa.evaluate_cancel(datetime.now().date())) # Policy returns true if policy should be cancelled
+
+        cancelled_policy = Cancelled_Policy.query.filter_by(policy_id=self.policy.id).first() # Get the newly cancelled policy
+
+        print "Verification of cancelled policy"
+        print "--------------------------------"
+        print "Policy Number:", cancelled_policy.policy_number
+        print "Cancelled on:", cancelled_policy.cancellation_date
+        print "Reason:", cancelled_policy.cancellation_reason
+        
+        db.session.delete(cancelled_policy) 
+        # Delete it because the foreign key is tied to policy and as such, won't allow policy to be deleted first

@@ -37,7 +37,8 @@ class Cancelled_Policy(db.Model):
     cancellation_date = db.Column(u'cancellation_date', db.DATE(), nullable=False)
     cancellation_reason = db.Column(u'cancellation_reason', db.VARCHAR(length=128), default=u'No payment received', nullable=False)
 
-    def __init__(self, policy_number, cancellation_date, cancellation_reason):
+    def __init__(self, policy_id, policy_number, cancellation_date, cancellation_reason):
+        self.policy_id = policy_id
         self.policy_number = policy_number
         self.cancellation_date = cancellation_date
         self.cancellation_reason = cancellation_reason
