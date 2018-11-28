@@ -13,6 +13,56 @@ from utils import PolicyAccounting
 Test Suite for Accounting
 #######################################################
 """
+class TestChangeBillingSchedule(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print "Setting up TestChangeBillingSchedule class..."
+        cls.test_agent = Contact('Test Joe Lee', 'Agent')
+        cls.test_insured = Contact('Test Anna White', 'Named Insured')
+        db.session.add(cls.test_agent)
+        db.session.add(cls.test_insured)
+        db.session.commit()
+
+        cls.policy = Policy('Test Policy Two', date(2015, 2, 1), 1600)
+        db.session.add(cls.policy)
+        db.session.commit()
+
+        cls.policy.named_insured = cls.test_insured.id
+        cls.policy.agent = cls.test_agent.id
+        cls.policy.billing_schedule = 'Quarterly'
+        db.session.commit()
+        print "Class set up!\n"
+    
+    @classmethod
+    def tearDownClass(cls):
+        print "Tearing down class..."
+        for invoice in cls.policy.invoices:
+            db.session.delete(invoice)
+        db.session.delete(cls.test_insured)
+        db.session.delete(cls.test_agent)
+        db.session.delete(cls.policy)
+        db.session.commit()
+        print "Class torn down!\n"
+    
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+    
+    def test_change_billing_schedule(self):
+        print "Testing change of billing schedule..."
+        pa = PolicyAccounting(self.policy.id)
+
+        self.assertTrue(self.policy.invoices)
+
+        first_invoice_paid = Invoice.query.filter_by(policy_id=self.policy.id).first()
+        first_invoice_paid.amount_due = 0
+
+        self.assertEquals(pa.change_billing_schedule(), 9) 
+        # This test relies on the temporary return value
+        print "Done!"
 
 class TestBillingSchedules(unittest.TestCase):
 

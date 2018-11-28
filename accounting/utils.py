@@ -222,6 +222,36 @@ class PolicyAccounting(object):
             
         db.session.commit() # Commit the changes (save)
 
+    def change_billing_schedule(self):
+        invoices_paid = 0 # Paid invoices tracker variable
+        new_amount_due = 0 # Calculate the new amount due based on invoices that haven't been paid yet
+        old_billing_date = None # Old billing date will determine how the payments are divided up
+
+        invoices = Invoice.query.filter_by(policy_id=self.policy.id).all() # Grab all invoices for the policy
+
+        for invoice in invoices: # For each invoice...
+            if invoice.amount_due == 0: # If it has been paid...
+                invoices_paid += 1 # Increment our paid invoices tracker variable
+            else: # Otherwise...
+                invoice.deleted = True # Mark the invoice as deleted...
+                new_amount_due += invoice.amount_due # And add the invoice amount due to our new amount due
+        
+        print "Invoices paid:", invoices_paid
+        print "New amount due:", new_amount_due
+        
+        for invoice in invoices: # Get the oldest billing date to determine how the new payments will be divided up
+            if invoice.deleted: # If the invoice has been marked as deleted...
+                old_billing_date = invoice.bill_date # Set the old billing date to the oldest deleted invoice
+                break # Break out of the for loop as we want the oldest date and nothing more
+        
+        print "Old billing date:", old_billing_date
+
+        next_effective_date = self.policy.effective_date + relativedelta(years=1) # Get next year's effective date
+        print "Next effective date:", next_effective_date
+
+        months_in_between = relativedelta(next_effective_date, old_billing_date).months # Get the months in-between the two dates
+
+        return months_in_between # This is my temporary return value for testing
 
 ################################
 # The functions below are for the db and 
