@@ -48,7 +48,6 @@ class PolicyAccounting(object):
 
         if len(invoices) != 0: # If invoices is empty, don't bother executing code on it as we are wasting time
             if len(invoices) == 1:
-                if invoice.amount_due > 0: # Check if the invoice has a remaining balance
                 if invoices[0].amount_due > 0: # Check if the invoice has a remaining balance
                     print "1 invoice is present. Listing..."
                     print "The current invoice has a balance due of $", invoices[0].amount_due
@@ -154,9 +153,6 @@ class PolicyAccounting(object):
             print "THIS POLICY SHOULD NOT CANCEL" # This is where you end up if invoices returns continue
 
     def make_invoices(self):
-        for invoice in self.policy.invoices: # If there are any invoices, delete them as we are making new ones
-            invoice.delete()
-
         billing_schedules = {'Annual': None, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}
 
         invoices = []
@@ -226,7 +222,6 @@ class PolicyAccounting(object):
             
         db.session.commit() # Commit the changes (save)
 
-    
 
 ################################
 # The functions below are for the db and 
