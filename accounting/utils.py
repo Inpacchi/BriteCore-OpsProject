@@ -107,6 +107,7 @@ class PolicyAccounting(object):
         for invoice in invoices: # For each invoice...
             if invoice.amount_due != 0: # That is not paid (i.e not equal to 0)...
                invoice.amount_due -= amount # Subtract the amount paid from the invoice amount due
+               break # We want to execute the break statement because we found our invoice that was decremented and don't want to modify any other ones
 
         db.session.add(payment) # Add the payment to the database
         db.session.commit() # Commit the changes (save)
@@ -223,6 +224,8 @@ class PolicyAccounting(object):
             db.session.add(invoice)
             
         db.session.commit() # Commit the changes (save)
+
+    
 
 ################################
 # The functions below are for the db and 
