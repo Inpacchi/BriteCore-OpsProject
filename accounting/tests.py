@@ -1,5 +1,4 @@
 #!/user/bin/env python2.7
-
 import unittest
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
@@ -17,7 +16,7 @@ class TestChangeBillingSchedule(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print "Setting up TestChangeBillingSchedule class..."
+        # print "Setting up TestChangeBillingSchedule class..."
         cls.test_agent = Contact('Test Joe Lee', 'Agent')
         cls.test_insured = Contact('Test Anna White', 'Named Insured')
         db.session.add(cls.test_agent)
@@ -32,38 +31,98 @@ class TestChangeBillingSchedule(unittest.TestCase):
         cls.policy.agent = cls.test_agent.id
         cls.policy.billing_schedule = 'Quarterly'
         db.session.commit()
-        print "Class set up!\n"
+        # print "Class set up!\n"
     
     @classmethod
     def tearDownClass(cls):
-        print "Tearing down class..."
-        for invoice in cls.policy.invoices:
-            db.session.delete(invoice)
+        # print "Tearing down class..."
         db.session.delete(cls.test_insured)
         db.session.delete(cls.test_agent)
         db.session.delete(cls.policy)
         db.session.commit()
-        print "Class torn down!\n"
+        # print "Class torn down!\n"
     
     def setUp(self):
         pass
 
     def tearDown(self):
-        pass
+        for invoice in self.policy.invoices:
+            db.session.delete(invoice)
+        db.session.commit()
     
-    def test_change_billing_schedule(self):
-        print "Testing change of billing schedule..."
+    def test_change_billing_schedule_quarterly_to_monthly(self):
+        print "Testing change of billing schedule from quarterly to monthly...\n"
+        self.policy.annual_premium = 1600
+        self.policy.billing_schedule = 'Quarterly'
+
         pa = PolicyAccounting(self.policy.id)
 
-        self.assertTrue(self.policy.invoices)
+        self.assertTrue(self.policy.invoices) # Check for invoices after PolicyAccounting creation
 
         first_invoice_paid = Invoice.query.filter_by(policy_id=self.policy.id).first()
         first_invoice_paid.amount_due = 0
 
-        self.assertEquals(pa.change_billing_schedule(), 9) 
-        # This test relies on the temporary return value
-        print "Done!"
+        pa.change_billing_schedule("Monthly")
+        db.session.rollback() # Rollback any changes made from the method to the database
+        
+        # self.assertEquals(pa.change_billing_schedule(), 9) # This test relies on the temporary return value I commented out
 
+        # print "Done!\n"
+    
+    def test_change_billing_schedule_monthly_to_quarterly(self):
+        print "Testing change of billing schedule from monthly to quarterly...\n"
+        self.policy.annual_premium = 1600
+        self.policy.billing_schedule = 'Monthly'
+
+        pa = PolicyAccounting(self.policy.id)
+
+        self.assertTrue(self.policy.invoices)
+
+        invoices = Invoice.query.filter_by(policy_id=self.policy.id).all()
+        for i in range(0, 3):
+            invoices[i].amount_due = 0
+
+        pa.change_billing_schedule("Quarterly")
+        db.session.rollback()
+        
+        # self.assertEquals(pa.change_billing_schedule(), 9) # This test relies on the temporary return value I commented out
+
+        # print "Done!\n"
+    
+    def test_change_billing_schedule_monthly_to_two_pay(self):
+        print "Testing change of billing schedule from monthly to two-pay...\n"
+        self.policy.annual_premium = 1200
+        self.policy.billing_schedule = 'Monthly'
+
+        pa = PolicyAccounting(self.policy.id)
+
+        self.assertTrue(self.policy.invoices)
+
+        invoices = Invoice.query.filter_by(policy_id=self.policy.id).all()
+        for i in range(0, 5):
+            invoices[i].amount_due = 0
+
+        pa.change_billing_schedule("Two-Pay")
+        db.session.rollback()
+        
+        # print "Done!\n"
+
+    def test_change_billing_schedule_two_pay_to_annual(self):
+        print "Testing change of billing schedule from two-pay to annual...\n"
+        self.policy.annual_premium = 1200
+        self.policy.billing_schedule = 'Two-Pay'
+
+        pa = PolicyAccounting(self.policy.id)
+
+        self.assertTrue(self.policy.invoices)
+
+        invoice = Invoice.query.filter_by(policy_id=self.policy.id).first()
+        invoice.amount_due = 0
+
+        pa.change_billing_schedule("Annual")
+        db.session.rollback()
+
+        # print "Done!\n"
 class TestBillingSchedules(unittest.TestCase):
 
     @classmethod
@@ -84,22 +143,22 @@ class TestBillingSchedules(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        print "Tearing down class..."
+        # print "Tearing down class..."
         db.session.delete(cls.test_insured)
         db.session.delete(cls.test_agent)
         db.session.delete(cls.policy)
         db.session.commit()
-        print "Class torn down!\n"
+        # print "Class torn down!\n"
 
     def setUp(self):
         pass
 
     def tearDown(self):
-        print "Tearing down..."
+        # print "Tearing down..."
         for invoice in self.policy.invoices:
             db.session.delete(invoice)
         db.session.commit()
-        print "Torn down!\n"
+        # print "Torn down!\n"
 
     def test_annual_billing_schedule(self):
         print "Testing annual billing schedule...\n"
@@ -110,7 +169,7 @@ class TestBillingSchedules(unittest.TestCase):
         pa = PolicyAccounting(self.policy.id)
         self.assertEquals(len(self.policy.invoices), 1)
         self.assertEquals(self.policy.invoices[0].amount_due, self.policy.annual_premium)
-        print "Done!\n"
+        # print "Done!\n"
 
     def test_monthly_billing_schedule(self):
         print "Test monthly billing schedule...\n"
@@ -119,14 +178,14 @@ class TestBillingSchedules(unittest.TestCase):
         pa = PolicyAccounting(self.policy.id)
         self.assertEquals(len(self.policy.invoices), 12)
         self.assertEquals(self.policy.invoices[0].amount_due, self.policy.annual_premium/12)
-        print "Done!\n"
+        # print "Done!\n"
 
 
 class TestReturnAccountBalance(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print "Setting up TestReturnAccountBalance class..."
+        # print "Setting up TestReturnAccountBalance class..."
         cls.test_agent = Contact('Test Agent', 'Agent')
         cls.test_insured = Contact('Test Insured', 'Named Insured')
         db.session.add(cls.test_agent)
@@ -138,44 +197,44 @@ class TestReturnAccountBalance(unittest.TestCase):
         cls.policy.agent = cls.test_agent.id
         db.session.add(cls.policy)
         db.session.commit()
-        print "Class set up!\n"
+        # print "Class set up!\n"
 
     @classmethod
     def tearDownClass(cls):
-        print "Tearing down class..."
+        # print "Tearing down class..."
         db.session.delete(cls.test_insured)
         db.session.delete(cls.test_agent)
         db.session.delete(cls.policy)
         db.session.commit()
-        print "Class torn down!\n"
+        # print "Class torn down!\n"
 
     def setUp(self):
-        print "Setting up..."
+        # print "Setting up..."
         self.payments = []
-        print "Set up!\n"
+        # print "Set up!\n"
 
     def tearDown(self):
-        print "Tearing down..."
+        # print "Tearing down..."
         for invoice in self.policy.invoices:
             db.session.delete(invoice)
         for payment in self.payments:
             db.session.delete(payment)
         db.session.commit()
-        print "Torn down!\n"
+        # print "Torn down!\n"
 
     def test_annual_on_eff_date(self):
         print "Testing account balance on annual effective date...\n"
         self.policy.billing_schedule = "Annual"
         pa = PolicyAccounting(self.policy.id)
         self.assertEquals(pa.return_account_balance(date_cursor=self.policy.effective_date), 1200)
-        print "Done!\n"
+        # print "Done!\n"
 
     def test_quarterly_on_eff_date(self):
         print "Testing account balance on quarterly effective date...\n"
         self.policy.billing_schedule = "Quarterly"
         pa = PolicyAccounting(self.policy.id)
         self.assertEquals(pa.return_account_balance(date_cursor=self.policy.effective_date), 300)
-        print "Done!\n"
+        # print "Done!\n"
 
     def test_quarterly_on_last_installment_bill_date(self):
         print "Testing account balance on last installment of quarterly bill date...\n"
@@ -184,7 +243,7 @@ class TestReturnAccountBalance(unittest.TestCase):
         invoices = Invoice.query.filter_by(policy_id=self.policy.id)\
                                 .order_by(Invoice.bill_date).all()
         self.assertEquals(pa.return_account_balance(date_cursor=invoices[3].bill_date), 1200)
-        print "Done!\n"
+        # print "Done!\n"
 
     def test_quarterly_on_second_installment_bill_date_with_full_payment(self):
         print "Testing account balance on second-to-last installment of quarterly bill date with full payment...\n"
@@ -195,4 +254,4 @@ class TestReturnAccountBalance(unittest.TestCase):
         self.payments.append(pa.make_payment(contact_id=self.policy.named_insured,
                                              date_cursor=invoices[1].bill_date, amount=600))
         self.assertEquals(pa.return_account_balance(date_cursor=invoices[1].bill_date), 0)
-        print "Done!\n"
+        # print "Done!\n"

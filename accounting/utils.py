@@ -222,7 +222,7 @@ class PolicyAccounting(object):
             
         db.session.commit() # Commit the changes (save)
 
-    def change_billing_schedule(self):
+    def change_billing_schedule(self, billing_schedule='Annual'):
         invoices_paid = 0 # Paid invoices tracker variable
         new_amount_due = 0 # Calculate the new amount due based on invoices that haven't been paid yet
         old_billing_date = None # Old billing date will determine how the payments are divided up
@@ -244,14 +244,108 @@ class PolicyAccounting(object):
                 old_billing_date = invoice.bill_date # Set the old billing date to the oldest deleted invoice
                 break # Break out of the for loop as we want the oldest date and nothing more
         
+        invoices = [] # Clear invoices as we don't need the old ones anymore
         print "Old billing date:", old_billing_date
 
         next_effective_date = self.policy.effective_date + relativedelta(years=1) # Get next year's effective date
-        print "Next effective date:", next_effective_date
+        print "Next effective date:", next_effective_date, "\n"
 
         months_in_between = relativedelta(next_effective_date, old_billing_date).months # Get the months in-between the two dates
 
-        return months_in_between # This is my temporary return value for testing
+        # return months_in_between # This was my temporary return value for testing
+
+        first_invoice = Invoice(self.policy.id, # Create an invoice based on the policy
+                                old_billing_date, # bill_date
+                                old_billing_date + relativedelta(months=1), # due_date
+                                old_billing_date + relativedelta(months=1, days=14), # cancel_date
+                                self.policy.annual_premium)
+
+        if billing_schedule != 'Annual': # If the billing schedule isn't Annual, append the invoice.
+            invoices.append(first_invoice) # Otherwise if it is, we want to check something first.
+
+        if billing_schedule == 'Annual': # If it is Annual, and the new amount due isn't equal to 0, we need to subtract that from
+            if new_amount_due != 0: # the first_invoice amount_due BEFORE we append it to the array
+                first_invoice.amount_due -= new_amount_due
+                invoices.append(first_invoice)
+        elif billing_schedule == 'Two-Pay':
+            billing_cycle = int(round(invoices_paid / 2.0)) # Get period between due dates
+            print "Billing Cycle in months:", billing_cycle
+            amount_due = new_amount_due / 2 # Divide based on billing_schedule
+            print "Billing Cycle amount due:", amount_due
+
+            # Set the invoice amount equal to itself divided by the billing schedule
+            first_invoice.amount_due = amount_due
+
+            for i in range(1, 2): # For each bill in the billing schedule...
+                # Based on the billing schedule, get the next time the customer has to pay and set that as the billing date. 
+                months_after_eff_date = i*billing_cycle
+                # print "Months after effective date:", months_after_eff_date # Debugging purposes
+
+                bill_date = old_billing_date + relativedelta(months=months_after_eff_date)
+                # print "Bill Date:", bill_date # 
+
+                invoice = Invoice(self.policy.id,
+                                  bill_date,
+                                  bill_date + relativedelta(months=1),
+                                  bill_date + relativedelta(months=1, days=14),
+                                  amount_due)
+
+                invoices.append(invoice)
+        elif billing_schedule == 'Quarterly':
+            billing_cycle = int(round(months_in_between / 4.0))
+            print "Billing Cycle in months:", billing_cycle
+            amount_due = new_amount_due / 4
+            print "Billing Cycle amount due:", amount_due, "\n"
+
+            first_invoice.amount_due = amount_due
+
+            for i in range(1, 4): 
+                months_after_eff_date = i*billing_cycle
+                # print "Months after effective date:", months_after_eff_date
+
+                bill_date = old_billing_date + relativedelta(months=months_after_eff_date)
+                # print "Bill Date:", bill_date
+
+                invoice = Invoice(self.policy.id,
+                                  bill_date,
+                                  bill_date + relativedelta(months=1),
+                                  bill_date + relativedelta(months=1, days=14),
+                                  amount_due)
+
+                invoices.append(invoice)
+        elif billing_schedule == 'Monthly':
+            amount_due = new_amount_due / months_in_between
+            print "Billing Cycle amount due:", amount_due
+        
+            first_invoice.amount_due = amount_due
+
+            for i in range(1, months_in_between): 
+                months_after_eff_date = i
+                # print "Months after effective date:", months_after_eff_date
+
+                bill_date = old_billing_date + relativedelta(months=months_after_eff_date)
+                # print "Bill Date:", bill_date
+
+                invoice = Invoice(self.policy.id,
+                                  bill_date,
+                                  bill_date + relativedelta(months=1),
+                                  bill_date + relativedelta(months=1, days=14),
+                                  amount_due)
+
+                invoices.append(invoice)
+        else:
+            print "You have chosen a bad billing schedule."
+
+        print "\nInvoice Details below:"
+
+        for invoice in invoices: # For every invoice created, add it to the database.
+            db.session.add(invoice)
+            print invoice.bill_date # Print information about each invoice to make sure dates and payments are correct
+            print invoice.due_date
+            print invoice.cancel_date
+            print invoice.amount_due
+            print "\n\n"
+
 
 ################################
 # The functions below are for the db and 
