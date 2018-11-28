@@ -102,10 +102,11 @@ class PolicyAccounting(object):
                           amount,
                           date_cursor)
         
-        invoice = Invoice.query.filter_by(policy_id=self.policy.id)\
-            .filter_by(amount_due > 0)\
-            .first() # Get the first invoice that hasn't already been paid
-        invoice.amount_due -= amount # Subtract the amount paid from the invoice amount due
+        invoices = Invoice.query.filter_by(policy_id=self.policy.id).all() # Get a list of invoices
+
+        for invoice in invoices: # For each invoice...
+            if invoice.amount_due != 0: # That is not paid (i.e not equal to 0)...
+               invoice.amount_due -= amount # Subtract the amount paid from the invoice amount due
 
         db.session.add(payment) # Add the payment to the database
         db.session.commit() # Commit the changes (save)
