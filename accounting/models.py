@@ -2,7 +2,7 @@ from accounting import db
 # from sqlalchemy.ext.declarative import declarative_base
 # 
 # DeclarativeBase = declarative_base()
-
+    
 class Policy(db.Model):
     __tablename__ = 'policies'
 
@@ -12,7 +12,7 @@ class Policy(db.Model):
     id = db.Column(u'id', db.INTEGER(), primary_key=True, nullable=False)
     policy_number = db.Column(u'policy_number', db.VARCHAR(length=128), nullable=False)
     effective_date = db.Column(u'effective_date', db.DATE(), nullable=False)
-    status = db.Column(u'status', db.Enum(u'Active', u'Canceled', u'Expired'), default=u'Active', nullable=False)
+    status = db.Column(u'status', db.Enum(u'Active', u'Cancelled', u'Expired'), default=u'Active', nullable=False)
     billing_schedule = db.Column(u'billing_schedule', db.Enum(u'Annual', u'Two-Pay', u'Quarterly', u'Monthly'), default=u'Annual', nullable=False)
     annual_premium = db.Column(u'annual_premium', db.INTEGER(), nullable=False)
     named_insured = db.Column(u'named_insured', db.INTEGER(), db.ForeignKey('contacts.id'))
@@ -24,7 +24,23 @@ class Policy(db.Model):
         self.annual_premium = annual_premium
 
     invoices = db.relation('Invoice', primaryjoin="Invoice.policy_id==Policy.id")
+    cancelled_policies = db.relation('Cancelled_Policy', primaryjoin="Cancelled_Policy.policy_id==Policy.id")
 
+class Cancelled_Policy(db.Model):
+    __tablename__ = 'cancelled_policies'
+
+    __table_args__ = {}
+
+    id = db.Column(u'id', db.INTEGER(), primary_key=True, nullable=False)
+    policy_id = db.Column(u'policy_id', db.INTEGER(), db.ForeignKey('policies.id'), nullable=False)
+    policy_number = db.Column(u'policy_number', db.VARCHAR(length=128), nullable=False)
+    cancellation_date = db.Column(u'cancellation_date', db.DATE(), nullable=False)
+    cancellation_reason = db.Column(u'cancellation_reason', db.VARCHAR(length=128), default=u'No payment received', nullable=False)
+
+    def __init__(self, policy_number, cancellation_date, cancellation_reason):
+        self.policy_number = policy_number
+        self.cancellation_date = cancellation_date
+        self.cancellation_reason = cancellation_reason
 
 class Contact(db.Model):
     __tablename__ = 'contacts'

@@ -4,7 +4,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 from accounting import db
-from models import Contact, Invoice, Payment, Policy
+from models import Contact, Invoice, Payment, Policy, Cancelled_Policy
 
 """
 #######################################################
@@ -147,10 +147,17 @@ class PolicyAccounting(object):
             if not self.return_account_balance(invoice.cancel_date): # If there is no account balance on the cancel date...
                 continue # Continue on to the next iteration of the for loop
             else:
-                print "THIS POLICY SHOULD HAVE CANCELED" # Otherwise the policy should be cancelled
+                print "THIS POLICY SHOULD HAVE CANCELED" # Otherwise the policy should be cancelled'
+                cancel_policy()
                 break
         else:
             print "THIS POLICY SHOULD NOT CANCEL" # This is where you end up if invoices returns continue
+
+    def cancel_policy(self, date_cursor=None):
+        if not date_cursor:
+            date_cursor = datetime.now().date()
+
+        self.policy.status = 'Cancelled'
 
     def make_invoices(self):
         billing_schedules = {'Annual': None, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}
