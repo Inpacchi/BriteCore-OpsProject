@@ -2,14 +2,135 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Some sort of title?</title>
-  <meta name="description" content="What is this?">
-  <meta name="author" content="Who?">
+  <title>Policies Database - BriteCore</title>
+  <meta name="description" content="Landing Page for the Policies Database">
+  <meta name="author" content="Yovarni Yearwood">
+
+  <!-- Automatic Refresh -->
+  <meta http-equiv="refresh" content="3" >
+
+  <!-- Bootstrap & jQuery CDN -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+  <!-- Fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Archivo Narrow' rel='stylesheet'>
+  
+  <!-- CSS -->
+  <style>
+    @media (min-width: 992px) { /* Only apply to browsers larger than 992px */
+      .header { /* General positioning for the page label and logo */
+        padding: 50px;
+      }
+      
+      #page-label-container {
+        border-bottom: 1px solid;
+        float: left;
+      }
+      
+      #logo {
+        width: 307px;
+        height: 47px;
+        float: right;
+      }
+
+      #main-box { /* Spans the browser and disregards the float values of the header */
+        width: auto;
+        height: 310px;
+        background-color: #5FE8FF;
+        clear: both;
+        padding: 50px;
+        margin-top: 50px;
+      }
+
+      #policy-number-textbox {
+        width: 200px;
+        float: right; /* Allows the textbox to be centered according to the columns */
+      }
+
+      #date-textbox {
+        width: 200px;
+        float: left; /* Allows the textbox to be centered according to the columns */
+      }
+    }
+
+    @media (max-width: 991px) {
+      #logo {
+        display: block;
+        width: 307px;
+        height: 47px;
+        margin: 35px auto;
+      }
+
+      #main-box {
+        width: auto;
+        height: 330px;
+        background-color: #5FE8FF;
+        padding: 25px;
+      }
+
+      #textboxes {
+        width: 250px;
+        display: block;
+        margin: auto;
+      }
+
+      #policy-number-textbox {
+        margin-bottom: 10px;
+      }
+    }
+
+    /* Global Values */
+    #submit-button {
+      display: block;
+      margin: 10px auto;
+      margin-top: 20px;
+    }
+
+    #view-all-button {
+      display: block;
+      margin: 10px auto;
+    }
+
+    #page-label {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      opacity: .75;
+    }
+
+    #main-box-label {
+      font-family: 'Archivo Narrow';font-size: 40px;
+      text-align: center;
+      margin-bottom: 25px;
+      opacity: .75;
+    }
+  </style>
+  
   <!--[if lt IE 9]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
 </head>
 <body>
-    <p>Your server is working.</p>
+  <div class="header">
+    <div id="page-label-container" class="d-none d-lg-block">
+      <h1 id="page-label">Policy Database</h1>
+    </div>
+    <img id="logo" src="/static/images/britecore.png" alt="BriteCore Logo">
+  </div>
+
+  <div id="main-box" class="container-fluid">
+    <p id="main-box-label">Search the database</p>
+    <div id="textboxes" class="row">
+      <div class="col-lg-6">
+        <input id="policy-number-textbox" type="policy-number" class="form-control" placeholder="Policy Number">
+      </div>
+      <div class="col-lg-6">
+        <input id="date-textbox" type="date" class="form-control" placeholder="Date">
+      </div>
+    </div>
+
+    <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Submit</button>
+    <button id="view-all-button" type="submit" class="btn btn-secondary">View all</button>
+  </div>
 </body>
 </html>
