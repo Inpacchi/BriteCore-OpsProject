@@ -3,16 +3,17 @@
 <head>
   <meta charset="utf-8">
   <title>Policies Database - BriteCore</title>
-  <meta name="description" content="Landing Page for the Policies Database">
+  <meta name="description" content="List of all policies">
   <meta name="author" content="Yovarni Yearwood">
 
-  <!-- Automatic Refresh
-  <meta http-equiv="refresh" content="3" > -->
+  <!-- Automatic Refresh 
+  <meta http-equiv="refresh" content="3" >-->
 
-  <!-- Bootstrap & jQuery CDN -->
+  <!-- Bootstrap, jQuery, Knockout.js -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://knockoutjs.com/downloads/knockout-3.5.0rc2.js"></script>
 
   <!-- Fonts -->
   <link href='https://fonts.googleapis.com/css?family=Archivo Narrow' rel='stylesheet'>
@@ -38,17 +39,14 @@
       #main-box { /* Spans the browser and disregards the float values of the header */
         clear: both;
         padding: 50px;
-        margin-top: 50px;
       }
 
       #policy-number-textbox {
         width: 200px;
-        float: right; /* Allows the textbox to be centered according to the columns */
       }
 
       #date-textbox {
         width: 200px;
-        float: left; /* Allows the textbox to be centered according to the columns */
       }
     }
 
@@ -63,43 +61,15 @@
       #main-box {
         padding: 25px;
       }
-
-      #textboxes {
-        width: 250px;
-        display: block;
-        margin: auto;
-      }
-
-      #policy-number-textbox {
-        margin-bottom: 10px;
-      }
     }
 
     /* Global Values */
-    #submit-button {
-      display: block;
-      margin: 10px auto;
-      margin-top: 20px;
-    }
-
-    #view-all-button {
-      display: block;
-      margin: 10px auto;
-    }
-
     #page-label {
       font-family: "Comic Sans MS", cursive, sans-serif;
       opacity: .75;
     }
-
-    #main-box-label {
-      font-family: 'Archivo Narrow';font-size: 40px;
-      text-align: center;
-      margin-bottom: 25px;
-      opacity: .75;
-    }
     
-    body, html {
+    /*body, html {
       height: 100%;
       margin: 0;
     }
@@ -110,7 +80,7 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
-    }
+    }*/
   </style>
   
   <!--[if lt IE 9]>
@@ -122,24 +92,57 @@
 
   <div class="header">
     <div id="page-label-container" class="d-none d-md-block">
-      <h1 id="page-label">Policy Database</h1>
+      <h1 id="page-label">Policies</h1>
     </div>
     <img id="logo" src="/static/images/britecore.png" alt="BriteCore Logo">
   </div>
 
   <div id="main-box" class="container-fluid">
-    <p id="main-box-label">Search the database</p>
-    <div id="textboxes" class="row">
-      <div class="col-lg-6 col-md-6">
-        <input id="policy-number-textbox" type="policy-number" class="form-control" placeholder="Policy Number">
-      </div>
-      <div class="col-lg-6 col-md-6">
-        <input id="date-textbox" type="date" class="form-control" placeholder="Date">
-      </div>
+      <table class="table table-striped table-bordered">
+          <thead class="thead-dark">
+              <tr>
+                  <th>Policy Number</th>
+                  <th>Effective Date</th>
+                  <th>Status</th>
+                  <th>Billing Schedule</th>
+                  <th>Annual Premium</th>
+                  <th>Account Balance</th>
+                  <th>Named Insured</th>
+                  <th>Agent</th>
+              </tr>
+          </thead>
+          <tbody data-bind="foreach: policies">
+              <tr>
+                  <td data-bind="text: policyNumber"></td>
+                  <td data-bind="text: effectiveDate"></td>
+                  <td data-bind="text: status"></td>
+                  <td data-bind="text: billingSchedule"></td>
+                  <td data-bind="value: annualPremium"></td>
+                  <td data-bind="value: accountBalance"></td>
+                  <td data-bind="text: namedInsured"></td>
+                  <td data-bind="text: agent"></td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+
+    <div class="container">
+        <div id="footer" class="row">
+            <div class="col-lg-6">
+                <button id="back-button" class="btn btn-secondary">Go Back</button>  
+            </div>
+            <div class="col-lg-2">
+                <input id="policy-number-textbox" type="policy-number" class="form-control" placeholder="Policy Number">
+            </div>
+            <div class="col-lg-2">
+                <input id="date-textbox" type="date" class="form-control" placeholder="Date">
+            </div>
+            <div class="col-lg-2">
+                <button id="submit-button" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
     </div>
 
-    <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Submit</button>
-    <button id="view-all-button" type="submit" class="btn btn-secondary" href="template/policies.html">View all</button>
-  </div>
+    <script type="text/javascript" src="static/scripts/policies.js"></script>
 </body>
 </html>
