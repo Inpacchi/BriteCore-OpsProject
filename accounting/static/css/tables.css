@@ -4,10 +4,13 @@
     }
     
     #page-label-container {
-        border-bottom: 1px solid;
         float: left;
     }
     
+    #page-label {
+        border-bottom: 1px solid;
+    }
+
     #logo {
         width: 307px;
         height: 47px;
@@ -45,4 +48,10 @@
     #page-label {
         font-family: "Comic Sans MS", cursive, sans-serif;
         opacity: .75;
+    }
+
+    #secondary-page-label {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        opacity: .75;
+        text-align: center;
     }

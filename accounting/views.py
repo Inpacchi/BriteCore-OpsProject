@@ -1,8 +1,16 @@
+# Necessary functions from libraries/frameworks
 from flask import render_template, jsonify
 from sqlalchemy import func
+from datetime import datetime
 
+# Necessary functions from code framework
 from accounting import app, db
+
+# Necessary models from database for the view
 from models import Contact, Invoice, Policy
+
+# Necessary functions for program utility
+from utils import PolicyAccounting
 
 @app.route("/")
 def index():
@@ -23,19 +31,34 @@ def populatePolicies(): # Grab all policies and return them in a JSON format
     return policies
 
 @app.route("/policyInvoices")
-@app.route("/policyInvoices/<policyNumber>")
-def policyInvoices(policyNumber):
+@app.route("/policyInvoices/<policyNumber>/<date>")
+def policyInvoices(policyNumber, date):
     policyNumber = policyNumber.replace("_", " ")
-    return render_template('policyInvoices.html', invoices = populateInvoices(policyNumber))
+    date = date.replace("_", " ")
 
-def populateInvoices(policyNumber): #TODO add date variable
     # func.lower() allows for case-insensitive searching of the database
-    policy = Policy.query.filter(func.lower(Policy.policy_number) == func.lower(policyNumber)).first_or_404()
+    policy = Policy.query.filter(func.lower(Policy.policy_number) == func.lower(policyNumber)).first_or_404() 
 
-    query = Invoice.query.filter_by(policy_id=policy.id)
+    # Pass policyNumber to the HTML so the page can be properly labeled
+    return render_template('policyInvoices.html', 
+        invoices = populateInvoices(policy, date), 
+        accountBalance = PolicyAccounting(policy.id).return_account_balance(date),
+        policyNumber = policyNumber.title()
+    )
+
+def populateInvoices(policy, date):
+    # Parse a date to datetime from the input date string
+    date_cursor = datetime.strptime(date, "%Y-%m-%d")
+
+    # Grab invoices for the policy before and on the given date
+    # One variable here allows use by two different statements down below
+    query = Invoice.query.filter_by(policy_id=policy.id).filter(Invoice.bill_date <= date_cursor)
+
+    # Return all the invoices
     rawInvoices = query.all()
     invoices = []
 
+    # Get a count of all invoices found
     for i in range(query.count()):
         invoice = jsonify(rawInvoices[i].to_json())
         invoices.append(invoice.data)

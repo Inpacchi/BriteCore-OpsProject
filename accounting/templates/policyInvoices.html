@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Policies Database - BriteCore</title>
+  <title>{{policyNumber}} - BriteCore</title>
   <meta name="description" content="List of all policies">
   <meta name="author" content="Yovarni Yearwood">
 
@@ -13,7 +13,7 @@
   <!--<script type="text/javascript" src="static/scripts/knockout.mapping-latest.js"></script>-->
 
   <!-- CSS -->
-  <link rel="stylesheet" href="../static/css/tables.css">
+  <link rel="stylesheet" href="../../static/css/tables.css">
 
   <!-- Fonts -->
   <link href='https://fonts.googleapis.com/css?family=Archivo Narrow' rel='stylesheet'>
@@ -25,7 +25,8 @@
 <body>
   <div class="header">
     <div id="page-label-container" class="d-none d-md-block">
-      <h1 id="page-label">Invoices</h1>
+      <h1 id="page-label">Invoices - {{policyNumber}}</h1>
+      <h5 id="secondary-page-label"> Account Balance: ${{accountBalance}}</h5>
     </div>
     <img id="logo" src="/static/images/britecore.png" alt="BriteCore Logo">
   </div>

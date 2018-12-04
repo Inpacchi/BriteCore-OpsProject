@@ -64,7 +64,8 @@
             alert("No policy number was entered.");
           } else {
             policyNumber = policyNumber.replace(" ", "_") // Make the code HTML safe by removing whitespace and replacing with a placeholder character
-            location.href = "{{url_for('policyInvoices')}}/" + policyNumber;
+            date = date.replace(" ", "_")
+            location.href = "{{url_for('policyInvoices')}}/" + policyNumber + "/" + date;
           }
         }
       </script>
