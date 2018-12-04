@@ -28,7 +28,8 @@ def policyInvoices(policyNumber):
     return render_template('policyInvoices.html', invoices = populateInvoices(policyNumber))
 
 def populateInvoices(policyNumber): #TODO add date variable
-    policy = Policy.query.filter(policy_number=policyNumber).first()
+    # func.lower() allows for case-insensitive searching of the database
+    policy = Policy.query.filter(func.lower(Policy.policy_number) == func.lower(policyNumber)).first_or_404()
 
     query = Invoice.query.filter_by(policy_id=policy.id)
     rawInvoices = query.all()
@@ -39,3 +40,7 @@ def populateInvoices(policyNumber): #TODO add date variable
         invoices.append(invoice.data)
 
     return invoices
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
