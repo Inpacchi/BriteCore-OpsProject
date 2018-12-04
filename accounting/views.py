@@ -1,6 +1,7 @@
 from flask import render_template, jsonify
-from accounting import app, db
+from sqlalchemy import func
 
+from accounting import app, db
 from models import Contact, Invoice, Policy
 
 @app.route("/")
