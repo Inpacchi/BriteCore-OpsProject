@@ -22,6 +22,18 @@ class Policy(db.Model):
         self.policy_number = policy_number
         self.effective_date = effective_date
         self.annual_premium = annual_premium
+    
+    def to_json(self): # Converts the Policy database model to a JSON readable format for use in Javascript
+        return {
+            'id': self.id,
+            'policy_number': self.policy_number,
+            'status': self.status,
+            'annual_premium': self.annual_premium,
+            'effective_date': str(self.effective_date),
+            'billing_schedule': self.billing_schedule,
+            'named_insured': self.named_insured,
+            'agent': self.agent
+        }
 
     invoices = db.relation('Invoice', primaryjoin="Invoice.policy_id==Policy.id")
     cancelled_policies = db.relation('Cancelled_Policy', primaryjoin="Cancelled_Policy.policy_id==Policy.id")

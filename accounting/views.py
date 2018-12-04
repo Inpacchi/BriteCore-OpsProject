@@ -1,14 +1,18 @@
-# You will probably need more methods from flask but this one is a good start.
-from flask import render_template
-
-# Import things from Flask that we need.
+from flask import render_template, jsonify
 from accounting import app, db
 
-# Import our models
 from models import Contact, Invoice, Policy
 
-# Routing for the server.
 @app.route("/")
 def index():
-    # You will need to serve something up here.
-    return render_template('index.html')
+    return render_template('policies.html', policies = populatePolicies(),policies_count = Policy.query.count())
+
+def populatePolicies(): # Grab all policies and return them in a JSON format
+    rawPolicies = Policy.query.all()
+    policies = []
+
+    for i in range(Policy.query.count()):
+        policy = jsonify(rawPolicies[i].to_json()) # Convert the JSON readable format to actual JSON
+        policies.append(policy.data)
+
+    return policies

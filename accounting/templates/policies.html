@@ -6,86 +6,24 @@
   <meta name="description" content="List of all policies">
   <meta name="author" content="Yovarni Yearwood">
 
-  <!-- Automatic Refresh 
-  <meta http-equiv="refresh" content="3" >-->
-
-  <!-- Bootstrap, jQuery, Knockout.js -->
+  <!-- Library Dependencies -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <script type="text/javascript" src="https://knockoutjs.com/downloads/knockout-3.5.0rc2.js"></script>
+  <!--<script type="text/javascript" src="static/scripts/knockout.mapping-latest.js"></script>-->
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="static/css/policies.css">
 
   <!-- Fonts -->
   <link href='https://fonts.googleapis.com/css?family=Archivo Narrow' rel='stylesheet'>
   
-  <!-- CSS -->
-  <style>
-    @media (min-width: 768px) { /* Only apply to browsers larger than 768px */
-      .header { /* General positioning for the page label and logo */
-        padding: 50px;
-      }
-      
-      #page-label-container {
-        border-bottom: 1px solid;
-        float: left;
-      }
-      
-      #logo {
-        width: 307px;
-        height: 47px;
-        float: right;
-      }
-
-      #main-box { /* Spans the browser and disregards the float values of the header */
-        clear: both;
-        padding: 50px;
-      }
-
-      #policy-number-textbox {
-        width: 200px;
-      }
-
-      #date-textbox {
-        width: 200px;
-      }
-    }
-
-    @media (max-width: 767px) {
-      #logo {
-        display: block;
-        width: 307px;
-        height: 47px;
-        margin: 35px auto;
-      }
-
-      #main-box {
-        padding: 25px;
-      }
-    }
-
-    /* Global Values */
-    #page-label {
-      font-family: "Comic Sans MS", cursive, sans-serif;
-      opacity: .75;
-    }
-    
-    /*body, html {
-      height: 100%;
-      margin: 0;
-    }
-
-    #main-box {
-      background-image: url("static/images/background-mountains.jpg");
-      height: 90%;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-    }*/
-  </style>
-  
   <!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
+  
+    
 </head>
 <body>
   <div class="background"></div>
@@ -106,19 +44,17 @@
                   <th>Status</th>
                   <th>Billing Schedule</th>
                   <th>Annual Premium</th>
-                  <th>Account Balance</th>
                   <th>Named Insured</th>
                   <th>Agent</th>
               </tr>
           </thead>
-          <tbody data-bind="foreach: policies">
+          <tbody data-bind="foreach: currentPolicies">
               <tr>
                   <td data-bind="text: policyNumber"></td>
                   <td data-bind="text: effectiveDate"></td>
                   <td data-bind="text: status"></td>
                   <td data-bind="text: billingSchedule"></td>
-                  <td data-bind="value: annualPremium"></td>
-                  <td data-bind="value: accountBalance"></td>
+                  <td data-bind="text: annualPremium"></td>
                   <td data-bind="text: namedInsured"></td>
                   <td data-bind="text: agent"></td>
               </tr>
@@ -143,6 +79,48 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="static/scripts/policies.js"></script>
+    <!-- For the script to run, it must be included at the bottom of the <body> tag -->
+    <script type=text/javascript>
+        function Policy(id, policyNumber, effectiveDate, status, billingSchedule, annualPremium, namedInsured, agent){
+            var self = this;
+            self.id = id;
+            self.policyNumber = policyNumber;
+            self.effectiveDate = effectiveDate;
+            self.status = status;
+            self.billingSchedule = billingSchedule;
+            self.annualPremium = annualPremium;
+            self.namedInsured = namedInsured;
+            self.agent = agent;
+        }
+        
+        function PoliciesViewModel(){
+            var self = this;
+
+            /*  {{var}} is the syntax used for reading the variable passed into the HTML document from Flask.
+                "tojson" converts the variable into local JSON readable by the Javascript and "safe" prevents any
+                HTML escapable characters from being put into the array. */
+            var policies = {{policies|tojson|safe}}; 
+            self.currentPolicies = [];
+
+            for(i=0; i<policies.length; i++){
+                var policy = JSON.parse(policies[i]); /* Parse the JSON into readable strings. */
+
+                self.currentPolicies.push(
+                    new Policy(
+                        policy.id,
+                        policy.policy_number,
+                        policy.effective_date,
+                        policy.status,
+                        policy.billing_schedule,
+                        policy.annual_premium,
+                        policy.named_insured,
+                        policy.agent
+                    )
+                );
+            }
+        }
+    
+    ko.applyBindings(new PoliciesViewModel());
+        </script>
 </body>
 </html>
