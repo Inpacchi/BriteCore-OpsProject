@@ -14,7 +14,7 @@
   <!--<script type="text/javascript" src="static/scripts/knockout.mapping-latest.js"></script>-->
 
   <!-- CSS -->
-  <link rel="stylesheet" href="static/css/policies.css">
+  <link rel="stylesheet" href="static/css/tables.css">
 
   <!-- Fonts -->
   <link href='https://fonts.googleapis.com/css?family=Archivo Narrow' rel='stylesheet'>
@@ -26,8 +26,6 @@
     
 </head>
 <body>
-  <div class="background"></div>
-
   <div class="header">
     <div id="page-label-container" class="d-none d-md-block">
       <h1 id="page-label">Policies</h1>
@@ -65,7 +63,7 @@
     <div class="container">
         <div id="footer" class="row">
             <div class="col-lg-6">
-                <button id="back-button" class="btn btn-secondary">Go Back</button>  
+                <a href="{{url_for('index')}}" id="back-button" role="button" class="btn btn-secondary">Go Back</a>  
             </div>
             <div class="col-lg-2">
                 <input id="policy-number-textbox" type="policy-number" class="form-control" placeholder="Policy Number">

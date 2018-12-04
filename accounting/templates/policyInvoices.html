@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Policies Database - BriteCore</title>
+  <meta name="description" content="List of all policies">
+  <meta name="author" content="Yovarni Yearwood">
+
+  <!-- Library Dependencies -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://knockoutjs.com/downloads/knockout-3.5.0rc2.js"></script>
+  <!--<script type="text/javascript" src="static/scripts/knockout.mapping-latest.js"></script>-->
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../static/css/tables.css">
+
+  <!-- Fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Archivo Narrow' rel='stylesheet'>
+  
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="header">
+    <div id="page-label-container" class="d-none d-md-block">
+      <h1 id="page-label">Invoices</h1>
+    </div>
+    <img id="logo" src="/static/images/britecore.png" alt="BriteCore Logo">
+  </div>
+
+  <div id="main-box" class="container-fluid">
+      <table class="table table-striped table-bordered">
+          <thead class="thead-dark">
+              <tr>
+                  <th>Bill Date</th>
+                  <th>Due Date</th>
+                  <th>Cancel Date</th>
+                  <th>Amount Due</th>
+                  <th>Deleted?</th>
+              </tr>
+          </thead>
+          <tbody data-bind="foreach: currentInvoices">
+              <tr>
+                  <td data-bind="text: billDate"></td>
+                  <td data-bind="text: dueDate"></td>
+                  <td data-bind="text: cancelDate"></td>
+                  <td data-bind="text: amountDue"></td>
+                  <td data-bind="text: deleted"></td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+
+    <div class="container">
+        <div id="footer" class="row">
+            <div class="col-lg-6">
+                <a href="{{url_for('index')}}" id="back-button" role="button" class="btn btn-secondary">Go Back</a>  
+            </div>
+            <div class="col-lg-2">
+                <input id="policy-number-textbox" type="policy-number" class="form-control" placeholder="Policy Number">
+            </div>
+            <div class="col-lg-2">
+                <input id="date-textbox" type="date" class="form-control" placeholder="Date">
+            </div>
+            <div class="col-lg-2">
+                <button id="submit-button" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script type=text/javascript>
+        function Invoice(id, policyId, billDate, dueDate, cancelDate, amountDue, deleted){
+            var self = this;
+            self.id = id;
+            self.policyId = policyId;
+            self.billDate = billDate;
+            self.dueDate = dueDate;
+            self.cancelDate = cancelDate;
+            self.amountDue = amountDue;
+            self.deleted = deleted;
+        }
+
+        function InvoicesViewModel(){
+            var self = this;
+
+            var invoices = {{invoices|tojson|safe}}; 
+            self.currentInvoices = [];
+
+            for(i=0; i<invoices.length; i++){
+                var invoice = JSON.parse(invoices[i]); 
+
+                self.currentInvoices.push(
+                    new Invoice(
+                        invoice.id,
+                        invoice.policy_id,
+                        invoice.bill_date,
+                        invoice.due_date,
+                        invoice.cancel_date,
+                        invoice.amount_due,
+                        invoice.deleted
+                    )
+                );
+            }
+        }
+    
+    ko.applyBindings(new InvoicesViewModel());
+
+    </script>
+</body>
+</html>

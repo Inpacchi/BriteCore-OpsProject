@@ -91,6 +91,16 @@ class Invoice(db.Model):
         self.cancel_date = cancel_date
         self.amount_due = amount_due
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'policy_id': self.policy_id,
+            'bill_date': str(self.bill_date),
+            'due_date': str(self.due_date),
+            'cancel_date': str(self.cancel_date),
+            'amount_due': self.amount_due,
+            'deleted': self.deleted
+        }
 
 class Payment(db.Model):
     __tablename__ = 'payments'

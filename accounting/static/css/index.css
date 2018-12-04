@@ -1,0 +1,92 @@
+@media (min-width: 768px) { /* Only apply to browsers larger than 768px */
+    .header { /* General positioning for the page label and logo */
+      padding: 50px;
+    }
+    
+    #page-label-container {
+      border-bottom: 1px solid;
+      float: left;
+    }
+    
+    #logo {
+      width: 307px;
+      height: 47px;
+      float: right;
+    }
+
+    #main-box { /* Spans the browser and disregards the float values of the header */
+      clear: both;
+      padding: 50px;
+      margin-top: 50px;
+    }
+
+    #policy-number-textbox {
+      width: 200px;
+      float: right; /* Allows the textbox to be centered according to the columns */
+    }
+
+    #date-textbox {
+      width: 200px;
+      float: left; /* Allows the textbox to be centered according to the columns */
+    }
+  }
+
+  @media (max-width: 767px) {
+    #logo {
+      display: block;
+      width: 307px;
+      height: 47px;
+      margin: 35px auto;
+    }
+
+    #main-box {
+      padding: 25px;
+    }
+
+    #textboxes {
+      width: 250px;
+      display: block;
+      margin: auto;
+    }
+
+    #policy-number-textbox {
+      margin-bottom: 10px;
+    }
+  }
+
+  /* Global Values */
+  #submit-button {
+    display: block;
+    margin: 10px auto;
+    margin-top: 20px;
+  }
+
+  #view-all-button {
+    display: block;
+    margin: 10px auto;
+  }
+
+  #page-label {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    opacity: .75;
+  }
+
+  #main-box-label {
+    font-family: 'Archivo Narrow';font-size: 40px;
+    text-align: center;
+    margin-bottom: 25px;
+    opacity: .75;
+  }
+  
+  body, html {
+    height: 100%;
+    margin: 0;
+  }
+
+  #main-box {
+    background-image: url("/../static/images/background-mountains.jpg");
+    height: 90%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
