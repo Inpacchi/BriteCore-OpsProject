@@ -39,10 +39,16 @@ def policyInvoices(policyNumber, date):
     # func.lower() allows for case-insensitive searching of the database
     policy = Policy.query.filter(func.lower(Policy.policy_number) == func.lower(policyNumber)).first_or_404() 
 
+    accountBalance = PolicyAccounting(policy.id).return_account_balance(date)
+
+    # If the accountBalance is returned as -1, then we know a date before the effective date was entered
+    if(accountBalance == -1): 
+        return redirect("404", code=404)
+
     # Pass policyNumber to the HTML so the page can be properly labeled
     return render_template('policyInvoices.html', 
         invoices = populateInvoices(policy, date), 
-        accountBalance = PolicyAccounting(policy.id).return_account_balance(date),
+        accountBalance = accountBalance,
         policyNumber = policyNumber.title()
     )
 

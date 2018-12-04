@@ -31,11 +31,16 @@ class PolicyAccounting(object):
         print "PolicyAccouting intialized!\n"
 
     def return_account_balance(self, date_cursor=None): # Take in a date and return the corresponding account balance according to invoices and payments
-        billing_schedules = {'Annual': 1, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}
-
         if not date_cursor: # If date_cursor is equal to the default value (None) or null, set it equal to the current date
             print "No date has been set. Setting date to current date."
             date_cursor = datetime.now().date()
+        else: # Convert the date_cursor to a datetime.date() variable
+            date_cursor = datetime.strptime(date_cursor, "%Y-%m-%d").date()
+
+        if(date_cursor <= self.policy.effective_date): # If a date is given before the effective date, there should be no account balance
+            return -1 # return -1 so our Flask server can handle the routing
+
+        billing_schedules = {'Annual': 1, 'Two-Pay': 2, 'Quarterly': 4, 'Monthly': 12}
 
         # Access the database to grab invoices according to the current policy. Filter them by looking for all invoices whose billing date is on or before 
         # the date_cursor, then order them by the billing date. The .all() method returns all matched invoices.
@@ -53,7 +58,7 @@ class PolicyAccounting(object):
                     print "The current invoice has a balance due of $", invoices[0].amount_due
                     due_now = invoices[0].amount_due
             else:
-                print len(invoices), "invoices are present. Listing..."
+                print len(invoices), "invoices, listing..."
                 for invoice in invoices:
                     if invoice.amount_due > 0: # Check if the invoice has a remaining balance
                         print "The current invoice has a balance due of $", invoice.amount_due
@@ -67,16 +72,6 @@ class PolicyAccounting(object):
         payments = Payment.query.filter_by(policy_id=self.policy.id)\
                                 .filter(Payment.transaction_date <= date_cursor)\
                                 .all()
-
-        if len(payments) != 0: # Same logic as above length of invoices above
-            print len(payments), " payments have been made. Listing..."
-            for payment in payments:
-                print "A payment has been made in the amount $", payment.amount_paid
-                due_now -= payment.amount_paid # Subtract each payment from due_now
-
-            print "The current amount due is now $", due_now, "\n"
-        else:
-            print "No payments have been made.\n"
 
         if len(invoices) == 0 and len(payments) == 0: # If there are no payments or invoices, the account balance has not been paid
             # If that's the case, set due_now equal to the annual premium divided by the billing schedule
