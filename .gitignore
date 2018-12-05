@@ -4,3 +4,6 @@
 .pub
 accounting/.DS_Store
 accounting/static/scripts/.DS_Store
+accounting/.DS_Store
+accounting/static/.DS_Store
+.DS_Store
