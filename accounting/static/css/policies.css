@@ -104,11 +104,17 @@
     }
 
     #policy-number-textbox {
+        display: block;
+        margin: auto;
         margin-top: 15px;
+        width: 175px;
     }
 
     #date-textbox {
+        display: block;
+        margin: auto;
         margin-top: 15px;
+        width: 175px;
     }
 
     #submit-button {
