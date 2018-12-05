@@ -42,16 +42,16 @@
             </thead>
             <tbody data-bind="foreach: currentInvoices">
                 <tr>
-                    <td data-bind="text: billDate"></td>
-                    <td data-bind="text: dueDate"></td>
-                    <td data-bind="text: cancelDate"></td>
-                    <td data-bind="text: amountDue">$</td>
+                    <td><span data-bind="text: billDate"></span></td>
+                    <td><span data-bind="text: dueDate"></span></td>
+                    <td><span data-bind="text: cancelDate"></span></td>
+                    <td><span id="currency" data-bind="text: amountDue"></span></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <div class="container-fluid">
+    <div class="footer" class="container-fluid">
         <div id="left-footer">
             <button onClick="moveToIndex()" id="back-button" role="button" class="btn btn-secondary">Go Back</button>  
         </div>
@@ -67,15 +67,12 @@
             location.href = "{{url_for('index')}}"
         }
 
-        function Invoice(id, policyId, billDate, dueDate, cancelDate, amountDue, deleted){
+        function Invoice(billDate, dueDate, cancelDate, amountDue){
             var self = this;
-            self.id = id;
-            self.policyId = policyId;
             self.billDate = billDate;
             self.dueDate = dueDate;
             self.cancelDate = cancelDate;
             self.amountDue = amountDue;
-            self.deleted = deleted;
         }
 
         function InvoicesViewModel(){
@@ -89,13 +86,10 @@
 
                 self.currentInvoices.push(
                     new Invoice(
-                        invoice.id,
-                        invoice.policy_id,
                         invoice.bill_date,
                         invoice.due_date,
                         invoice.cancel_date,
                         invoice.amount_due,
-                        invoice.deleted
                     )
                 );
             }

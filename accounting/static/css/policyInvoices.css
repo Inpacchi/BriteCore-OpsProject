@@ -123,6 +123,10 @@
         display: block;
     }
 
+    .footer {
+        margin-bottom: 35px;
+    }
+
     /* Mobile Table Formatting */
     table, thead, tbody, th, td, tr { 
 		display: block; 
@@ -171,4 +175,8 @@
         font-family: "Comic Sans MS", cursive, sans-serif;
         opacity: .75;
         text-align: center;
+    }
+
+    #currency:before {
+        content: "$";
     }

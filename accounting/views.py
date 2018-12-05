@@ -1,6 +1,7 @@
 # Necessary functions from libraries/frameworks
 from flask import render_template, jsonify
 from sqlalchemy import func
+from sqlalchemy.orm import aliased
 from datetime import datetime
 
 # Necessary functions from code framework
@@ -20,15 +21,43 @@ def index():
 def policies():
     return render_template('policies.html', policies = populatePolicies())
 
-def populatePolicies(): # Grab all policies and return them in a JSON format
-    rawPolicies = Policy.query.all()
-    policies = []
+# Grab all policies and return them in a JSON format
+def populatePolicies(): 
+    # For use in query to query the contacts table twice for names
+    Contact_Alias = aliased(Contact) 
 
-    for i in range(Policy.query.count()):
-        policy = jsonify(rawPolicies[i].to_json()) # Convert the JSON readable format to actual JSON
+    query = db.session.query(Policy.policy_number,
+        Policy.status,
+        Policy.annual_premium,
+        Policy.effective_date,
+        Policy.billing_schedule,
+        Contact.name,
+        Contact_Alias.name)\
+        .join(Contact, Policy.named_insured == Contact.id)\
+        .join(Contact_Alias, Policy.agent == Contact_Alias.id)
+
+    tuples = query.all()
+    policies = []
+    
+    for i in range(query.count()):
+        policy = list(tuples[i]) # Variable assignment from tuple to list
+        policy = jsonify(return_json(policy))
+
         policies.append(policy.data)
 
     return policies
+
+# Returns JSON parseable output from the query
+def return_json(policy):
+    return {
+        'policy_number': policy[0],
+        'status': policy[1],
+        'annual_premium': policy[2],
+        'effective_date': str(policy[3]),
+        'billing_schedule': policy[4],
+        'named_insured': policy[5],
+        'agent': policy[6]
+    }
 
 @app.route("/policyInvoices")
 @app.route("/policyInvoices/<policyNumber>/<date>")
@@ -43,7 +72,7 @@ def policyInvoices(policyNumber, date):
 
     # If the accountBalance is returned as -1, then we know a date before the effective date was entered
     if(accountBalance == -1): 
-        return redirect("404", code=404)
+        return render_template("404.html", code=404)
 
     # Pass policyNumber to the HTML so the page can be properly labeled
     return render_template('policyInvoices.html', 

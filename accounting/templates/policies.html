@@ -23,10 +23,10 @@
 </head>
 <body>
     <div class="header">
-        <div id="page-label-container" class="d-none d-md-block">
+        <img id="logo" src="/static/images/britecore.png" alt="BriteCore Logo">
+        <div id="page-label-container">
             <h1 id="page-label">Policies</h1>
         </div>
-        <img id="logo" src="/static/images/britecore.png" alt="BriteCore Logo">
     </div>
 
     <div id="main-box" table="tale-responsive">
@@ -34,10 +34,10 @@
             <thead>
                 <tr>
                     <th>Policy Number</th>
-                    <th>Effective Date</th>
                     <th>Status</th>
-                    <th>Billing Schedule</th>
                     <th>Annual Premium</th>
+                    <th>Effective Date</th>
+                    <th>Billing Schedule</th>
                     <th>Named Insured</th>
                     <th>Agent</th>
                 </tr>
@@ -45,10 +45,10 @@
             <tbody data-bind="foreach: currentPolicies">
                 <tr>
                     <td><span data-bind="text: policyNumber"></span></td>
-                    <td><span data-bind="text: effectiveDate"></span></td>
                     <td><span data-bind="text: status"></span></td>
+                    <td><span id="currency" data-bind="text: annualPremium"></span></td>
+                    <td><span data-bind="text: effectiveDate"></span></td>
                     <td><span data-bind="text: billingSchedule"></span></td>
-                    <td><span data-bind="text: annualPremium"></span></td>
                     <td><span data-bind="text: namedInsured"></span></td>
                     <td><span data-bind="text: agent"></span></td>
                 </tr>
@@ -56,7 +56,7 @@
         </table>
     </div>
 
-    <div class="container-fluid">
+    <div class="footer" class="container-fluid">
         <div id="left-footer">
             <button onClick="moveToIndex()" id="back-button" role="button" class="btn btn-secondary">Go Back</button>  
         </div>
@@ -73,9 +73,8 @@
             location.href = "{{url_for('index')}}"
         }
 
-        function Policy(id, policyNumber, effectiveDate, status, billingSchedule, annualPremium, namedInsured, agent){
+        function Policy(policyNumber, effectiveDate, status, billingSchedule, annualPremium, namedInsured, agent){
             var self = this;
-            self.id = id;
             self.policyNumber = policyNumber;
             self.effectiveDate = effectiveDate;
             self.status = status;
@@ -99,7 +98,6 @@
 
                 self.currentPolicies.push(
                     new Policy(
-                        policy.id,
                         policy.policy_number,
                         policy.effective_date,
                         policy.status,
@@ -118,8 +116,6 @@
             document.getElementById("policy-number-textbox").value = "";
             document.getElementById("date-textbox").value = "";
         }
-        
-        ko.applyBindings(new InvoicesViewModel());
 
         function searchDatabase(){
             policyNumber = document.getElementById("policy-number-textbox").value;

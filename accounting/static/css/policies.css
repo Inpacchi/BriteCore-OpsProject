@@ -123,6 +123,10 @@
         display: block;
     }
 
+    .footer {
+        margin-bottom: 35px;
+    }
+    
     /* Mobile Table Formatting */
     table, thead, tbody, th, td, tr { /* Make each cell act as it's own row */
 		display: block; 
@@ -143,8 +147,8 @@
 		border-bottom: 1px solid #eee; 
         position: relative;
         padding: 5px;
-		padding-left: 50%; 
-	}
+        padding-left: 50%; 
+    }
 	
 	td:before { /* Positioning of new table headers */
 		position: absolute;
@@ -156,10 +160,10 @@
 	}
 
     td:nth-child(1):before { content: "Policy Number: "; }
-	td:nth-child(2):before { content: "Effective Date: "; }
-	td:nth-child(3):before { content: "Status: "; }
-	td:nth-child(4):before { content: "Billing Schedule: "; }
-	td:nth-child(5):before { content: "Annual Premium: "; }
+	td:nth-child(2):before { content: "Status: "; }
+	td:nth-child(3):before { content: "Annual Premium: "; }
+	td:nth-child(4):before { content: "Effective Date: "; }
+	td:nth-child(5):before { content: "Billing Schedule: "; }
 	td:nth-child(6):before { content: "Named Insured: "; }
 	td:nth-child(7):before { content: "Agent: "; }
 }
@@ -174,4 +178,8 @@
         font-family: "Comic Sans MS", cursive, sans-serif;
         opacity: .75;
         text-align: center;
+    }
+    
+    #currency:before {
+        content: "$";
     }
