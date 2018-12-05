@@ -1,0 +1,174 @@
+@media (min-width: 830px) { /* Only apply to browsers larger than 768px */
+    .header { /* General positioning for the page label and logo */
+        padding: 50px;
+    }
+    
+    #page-label-container {
+        float: left;
+    }
+    
+    #page-label {
+        border-bottom: 1px solid;
+    }
+
+    #logo {
+        width: 307px;
+        height: 47px;
+        float: right;
+    }
+
+    #main-box { /* Spans the browser and disregards the float values of the header */
+        clear: both;
+        padding: 50px;
+    }
+
+    table { /* Make sure table responds to viewport */
+        width: 100%; 
+        border-collapse: collapse; 
+      }
+
+    tr:nth-of-type(odd) { /* Alternate row colors */
+        background: #eee; 
+    }
+
+    th { /* Table Header */
+        background: #333; 
+        color: white; 
+        font-weight: bold; 
+    }
+    
+    td, th { /* Border Sizing */
+        padding: 6px; 
+        border: 1px solid #ccc; 
+        text-align: left; 
+    }
+
+    tr:hover { /* Set color when hovering over a row */
+        background-color: #3399ff;
+    }
+
+    #left-footer {
+        float: left;
+    }
+
+    #back-button {
+        margin-left: 50px;
+    }
+
+    #right-footer {
+        float: right;
+    }
+    #policy-number-textbox {
+        display: inline;
+        width: 185px;
+    }
+
+    #date-textbox {
+        display: inline;
+        width: 185px;
+    }
+
+    #submit-button {
+        display: inline;
+        margin-right: 50px;
+    }
+}
+
+@media (max-width: 829px) {
+    #logo {
+        display: block;
+        width: 307px;
+        height: 47px;            
+        margin: 35px auto 10px;
+    }
+
+    #page-label-container {
+        text-align: center;
+    }
+
+    #page-label{
+        font-size: 150%;
+    }
+
+    #secondary-page-label {
+        font-size: 125%;
+    }
+
+    #main-box {
+        padding: 25px;
+    }
+
+    #back-button {
+        margin: auto;
+        display: block;
+    }
+
+    #policy-number-textbox {
+        display: block;
+        margin: auto;
+        margin-top: 15px;
+        width: 175px;
+    }
+
+    #date-textbox {
+        display: block;
+        margin: auto;
+        margin-top: 15px;
+        width: 175px;
+    }
+
+    #submit-button {
+        margin: auto;
+        margin-top: 15px;
+        display: block;
+    }
+
+    /* Mobile Table Formatting */
+    table, thead, tbody, th, td, tr { 
+		display: block; 
+    }
+
+    thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+    tr { 
+        border: 1px solid #000; 
+    }
+
+    td { 
+		border: none;
+		border-bottom: 1px solid #eee; 
+        position: relative;
+        padding: 5px;
+		padding-left: 50%; 
+	}
+	
+	td:before { 
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+
+    td:nth-child(1):before { content: "Bill Date: "; }
+	td:nth-child(2):before { content: "Due Date: "; }
+	td:nth-child(3):before { content: "Cancel Date: "; }
+	td:nth-child(4):before { content: "Amount Due: "; }
+}
+
+    /* Global Values */
+    #page-label {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        opacity: .75;
+    }
+
+    #secondary-page-label {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        opacity: .75;
+        text-align: center;
+    }

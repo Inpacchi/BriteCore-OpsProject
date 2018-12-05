@@ -8,7 +8,7 @@
         height: 47px;
         float: right;
     }
-  }
+}
 
 @media (max-width: 767px) {
     #logo {
@@ -17,21 +17,14 @@
         height: 47px;
         margin: 35px auto;
     }
+
+    #error {
+        width: 100%;
+    }
 }
 
-/* Global Values */
-body, html {
-    height: 100%;
-    margin: 0;
-}
-
-.error {
-    background-image: url("../../static/images/404.jpg");
-    height: 50%;
-    width: 50%;
-    background-position: center;
-    background-repeat: no-repeat;
+#error {
     display: block;
     margin: auto;
-    margin-top: 75px;
+    margin-top: 1%;
 }
