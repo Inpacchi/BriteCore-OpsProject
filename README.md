@@ -140,9 +140,3 @@ The Problems
 
 **BONUS**: If there's anything else bothering you about the code, go ahead and feel free to
 change it. Make each additional update in its own commit and be sure to put "Bonus" in the commit message please. :)
- 
- 
-Finished?
----------
-
-Once completed, please ensure your commit history in the repo is clean and understandable with a detailed view of your progress and changes from each problem. When you are ready to submit the project, please share your GitHub repo with the BriteCore hiring manager that sent you the project.
